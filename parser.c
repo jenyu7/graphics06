@@ -90,6 +90,7 @@ void parse_file ( char * filename,
     double xvals[4];
     double yvals[4];
     double zvals[4];
+    double rvals[2];
     struct matrix *tmp;
     double r;
     double theta;
@@ -119,13 +120,6 @@ void parse_file ( char * filename,
       sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf",
 	     xvals, yvals, xvals+1, yvals+1,
 	     xvals+2, yvals+2, xvals+3, yvals+3);
-      /* printf("%lf %lf %lf %lf %lf %lf %lf %lf\n", */
-      /* 	     xvals[0], yvals[0], */
-      /* 	     xvals[1], yvals[1], */
-      /* 	     xvals[2], yvals[2], */
-      /* 	     xvals[3], yvals[3]); */
-      
-      //printf("%d\n", type);
       add_curve( edges, xvals[0], yvals[0], xvals[1], yvals[1],
 		 xvals[2], yvals[2], xvals[3], yvals[3], step, type);
     }//end of curve
@@ -138,12 +132,26 @@ void parse_file ( char * filename,
 	     xvals, yvals, zvals,
 	     xvals+1, yvals+1, zvals+1);
       /*printf("%lf %lf %lf %lf %lf %lf",
-	     xvals[0], yvals[0], zvals[0],
-	     xvals[1], yvals[1], zvals[1]) */
+	xvals[0], yvals[0], zvals[0],
+	xvals[1], yvals[1], zvals[1]) */
       add_edge(edges, xvals[0], yvals[0], zvals[0],
 	       xvals[1], yvals[1], zvals[1]);      
     }//end line
-
+    else if ( strncmp(line, "sphere", strlen(line)) == 0 ) {
+      fgets(line, sizeof(line), f);
+      sscanf(line, "%lf %lf %lf %lf", xvals, yvals, zvals, rvals);
+      add_sphere(edges, xvals[0], yvals[0], zvals[0], rvals[0], step);
+    }//end sphere
+    else if ( strncmp(line, "torus", strlen(line)) == 0 ) {
+      fgets(line, sizeof(line), f);
+      sscanf(line, "%lf %lf %lf %lf %lf", xvals, yvals, zvals, rvals, rvals + 1);
+      add_torus(edges, xvals[0], yvals[0], zvals[0], rvals[0], rvals[1], step);
+    }//end torus
+    else if ( strncmp(line, "box", strlen(line)) == 0 ) {
+      fgets(line, sizeof(line), f);
+      sscanf(line, "%lf %lf %lf %lf %lf %lf", xvals, yvals, zvals, xvals + 1, yvals + 1, zvals + 1);
+      add_box(edges, xvals[0], yvals[0], zvals[0], xvals[1], yvals[1], zvals[1]);
+    }//end box
     else if ( strncmp(line, "scale", strlen(line)) == 0 ) {
       fgets(line, sizeof(line), f);
       //printf("SCALE\t%s", line);
